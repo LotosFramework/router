@@ -21,6 +21,6 @@
         "lotos/http": "*",
         "lotos/collection": "*",
         "fig/http-message-util": "1.1.3",
-        "psr/container": "*",
+        "psr/container": "*"
     }
 }
