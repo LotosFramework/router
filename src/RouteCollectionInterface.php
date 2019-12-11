@@ -2,7 +2,7 @@
 
 namespace Lotos\Router;
 
-use Ds\Sequence as CollecionInterface;
+use Ds\Sequence as CollectionInterface;
 
 interface RouteCollectionInterface extends CollectionInterface
 {
