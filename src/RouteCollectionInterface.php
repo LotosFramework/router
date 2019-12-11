@@ -2,9 +2,9 @@
 
 namespace Lotos\Router;
 
-use Lotos\Collection\Collection;
+use Ds\Sequence as CollecionInterface;
 
-interface RouteCollectionInterface extends Collection
+interface RouteCollectionInterface extends CollectionInterface
 {
     public function addRoute(Route $route) : void;
     public function getRouteByPath(string $method, string $path) : ?Route;
