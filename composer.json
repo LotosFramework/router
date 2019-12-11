@@ -22,5 +22,6 @@
         "lotos/collection": "*",
         "fig/http-message-util": "1.1.3",
         "psr/container": "*"
+        "php-ds/php-ds": "^1.2.0"
     }
 }
