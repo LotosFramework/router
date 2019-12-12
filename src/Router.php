@@ -116,7 +116,8 @@ class Router implements RequestMethodInterface, StatusCodeInterface
 
     public function resolve(ContainerInterface $container) : void
     {
-        try{
+        try {
+            $errorPages = $this->errorPages ?? new ErrorPages($container->get(ResponseInterface::class));
             $this->getRouteByPath();
             $this->checkExistsRoute();
             $this->checkIsAllowedMethod();
@@ -124,13 +125,10 @@ class Router implements RequestMethodInterface, StatusCodeInterface
             $this->allowedOrigin();
             $this->dispatch($container);
         } catch(RouteNotFoundException $e) {
-            $errorPages = $this->errorPages ?? new ErrorPages($container->get(ResponseInterface::class));
             $this->defaultStrategy->process($errorPages->notFound($this->serverRequest));
         } catch(MethodNotAllowedException $e) {
-            $errorPages = $this->errorPages ?? new ErrorPages($container->get(ResponseInterface::class));
             $this->defaultStrategy->process($errorPages->notAllowed($this->serverRequest));
         } catch(ReferrerNotAllowedException | ReferrerNotFoundException $e) {
-            $errorPages = $this->errorPages ?? new ErrorPages($container->get(ResponseInterface::class));
             $this->defaultStrategy->process($errorPages->invalidOrigin($this->serverRequest));
         }
     }
