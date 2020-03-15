@@ -135,6 +135,11 @@ class Router implements RequestMethodInterface, StatusCodeInterface
 
     public function dispatch(ContainerInterface $container) : void
     {
+        $this->route->parseVars($this->serverRequest);
+        $vars = $this->route->getVars();
+        if($vars) {
+            $this->serverRequest->getUri()->addVars($this->route->getVars());
+        }
         $obj = $container->get($this->route->getHandlerClass());
         $method = $this->route->getHandlerMethod();
         $this->route->getStrategy()->process($obj->$method($this->serverRequest));

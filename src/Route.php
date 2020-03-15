@@ -3,6 +3,7 @@
 namespace Lotos\Router;
 
 use Lotos\Http\StrategyInterface;
+use Psr\Http\Message\RequestInterface;
 
 class Route
 {
@@ -17,6 +18,7 @@ class Route
     private $scheme;
     private $host;
     private $strategy;
+    private $vars;
 
     public function __construct($path, $handler)
     {
@@ -114,5 +116,48 @@ class Route
     {
         $uri = explode('/', $this->getUri());
         return count($uri);
+    }
+
+    private function addVar(string $name, string $value) : void
+    {
+        $this->vars[$name] = $value;
+    }
+
+    public function parseVars(RequestInterface $request) : void
+    {
+        $pathParts = explode('/', $this->prefix.$this->path);
+        foreach($pathParts as $part) {
+            if($this->isVar($part)) {
+                $this->setVars($request, $pathParts);
+            }
+        }
+    }
+
+    private function isVar($var) : bool {
+        if((substr($var, 0, 1) == '{') && ((substr($var, -1) == '}') || (substr($var, -2) == '}?'))) {
+            return true;
+        }
+        return false;
+    }
+
+    private function getVarName(string $var) : string
+    {
+        return str_replace(['{', '}', ':s', ':d', ':a'], '', $var);
+    }
+
+    private function setVars(RequestInterface $request, array $pathArr)
+    {
+
+        $requestArr = explode('/', $request->getUri()->getPath());
+        $keys = array_diff($pathArr, $requestArr);
+        $vals = array_diff($requestArr, $pathArr);
+        foreach($keys as $index => $name) {
+            $this->vars[$this->getVarName($name)] = (array_key_exists($index, $vals)) ? $vals[$index] : '';
+        }
+    }
+
+    public function getVars() : ?array
+    {
+        return $this->vars;
     }
 }

@@ -3,8 +3,9 @@
 namespace Lotos\Router;
 
 use Psr\Http\Message\{RequestInterface, ResponseFactoryInterface, ResponseInterface};
+use Fig\Http\Message\StatusCodeInterface;
 
-class ErrorPages implements ErrorPagesInterface
+class ErrorPages implements ErrorPagesInterface, StatusCodeInterface
 {
     private $responseFactory;
 
@@ -15,16 +16,16 @@ class ErrorPages implements ErrorPagesInterface
 
     public function notFound(RequestInterface $request) : ResponseInterface
     {
-        return $this->responseFactory->createResponse(404, 'Not found');
+        return $this->responseFactory->createResponse(self::STATUS_NOT_FOUND, 'Not found');
     }
 
     public function notAllowed(RequestInterface $request) : ResponseInterface
     {
-        return $this->responseFactory->createResponse(405, 'Method not allowed');
+        return $this->responseFactory->createResponse(self::STATUS_METHOD_NOT_ALLOWED, 'Method not allowed');
     }
 
     public function invalidOrigin(RequestInterface $request) : ResponseInterface
     {
-        return $this->responseFactory->createResponse(423, 'Locked');
+        return $this->responseFactory->createResponse(self::STATUS_LOCKED, 'Locked');
     }
 }
