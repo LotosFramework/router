@@ -129,8 +129,31 @@ class Route
         foreach($pathParts as $part) {
             if($this->isVar($part)) {
                 $this->setVars($request, $pathParts);
+                $this->updateHandlerClass();
             }
         }
+    }
+
+    private function updateHandlerClass() : void
+    {
+        $handler = array_map(function($item) {
+            return array_key_exists($this->getVarName($item), $this->vars)
+                ? $this->toCamelCase($this->vars[$this->getVarName($item)])
+                : $item;
+        }, explode('\\', $this->handler['class']));
+        $this->handler['class'] = implode('\\', $handler);
+    }
+
+    private function toCamelCase(string $snaked) : string
+    {
+        if (substr_count($snaked, '_') > 0) {
+            $arr = explode('_', $snaked);
+            $arr = array_map(function($item)  {
+                return ucfirst($item);
+            }, $arr);
+            $snaked = implode('', $arr);
+        }
+        return $snaked;
     }
 
     private function isVar($var) : bool {
@@ -147,7 +170,6 @@ class Route
 
     private function setVars(RequestInterface $request, array $pathArr)
     {
-
         $requestArr = explode('/', $request->getUri()->getPath());
         $keys = array_diff($pathArr, $requestArr);
         $vals = array_diff($requestArr, $pathArr);
