@@ -7,11 +7,8 @@ use Fig\Http\Message\StatusCodeInterface;
 
 class ErrorPages implements ErrorPagesInterface, StatusCodeInterface
 {
-    private $responseFactory;
-
-    public function __construct(ResponseFactoryInterface $responseFactory)
+    public function __construct(private ResponseFactoryInterface $responseFactory)
     {
-        $this->responseFactory = $responseFactory;
     }
 
     public function notFound(RequestInterface $request) : ResponseInterface

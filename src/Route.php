@@ -10,15 +10,15 @@ class Route
 
     use StrategyTrait;
 
-    private $prefix;
-    private $path;
-    private $method;
-    private $handler = ['class'=>'', 'method'=>''];
-    private $port;
-    private $scheme;
-    private $host;
-    private $strategy;
-    private $vars;
+    private ?string $prefix = null;
+    private ?string $path = null;
+    private ?string $method = null;
+    private array $handler = ['class'=>'', 'method'=>''];
+    private ?int $port = null;
+    private ?string $scheme = null;
+    private ?string $host = null;
+    private ?StrategyInterface $strategy = null;
+    private array $vars = [];
 
     public function __construct($path, $handler)
     {
@@ -57,7 +57,7 @@ class Route
         $this->method = $method;
     }
 
-    public function getMethod() : string
+    public function getMethod() : ?string
     {
         return $this->method;
     }

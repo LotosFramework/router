@@ -29,21 +29,18 @@ class Router implements RequestMethodInterface, StatusCodeInterface
 
     const METHOD_ANY = 'ANY';
 
-    private $routeCollection;
-    private $serverRequest;
-    private $defaultStrategy;
-    private $route;
+    private ?RouteCollectionInterface $routeCollection;
+    private ?Route $route = null;
 
     protected $prefix;
 
     public function __construct(
-        ServerRequestInterface $request,
-        StrategyInterface $defaultStrategy,
-        ?RouteCollectionInterface $collection = null,
-        ?ErrorPagesInterface $errorPages = null
+        private ServerRequestInterface $request,
+        private StrategyInterface $defaultStrategy,
+        private ?RouteCollectionInterface $collection = null,
+        private ?ErrorPagesInterface $errorPages = null
     ) {
         $this->serverRequest = $request;
-        $this->defaultStrategy = $defaultStrategy;
         $this->routeCollection = $collection ?? new RouteCollection();
         $this->errorPages = $errorPages;
     }
