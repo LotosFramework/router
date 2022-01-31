@@ -13,8 +13,6 @@ use Psr\Http\Message\{
 use Lotos\Router\Exception\{
     RouteNotFoundException,
     MethodNotAllowedException,
-    ReferrerNotAllowedException,
-    ReferrerNotFoundException,
 };
 use Psr\Container\ContainerInterface;
 use Lotos\Http\Message\HttpMessagesTrait;
@@ -118,15 +116,11 @@ class Router implements RequestMethodInterface, StatusCodeInterface
             $this->getRouteByPath();
             $this->checkExistsRoute();
             $this->checkIsAllowedMethod();
-            $this->checkExistsReferrer();
-            $this->allowedOrigin();
             $this->dispatch($container);
         } catch(RouteNotFoundException $e) {
             $this->defaultStrategy->process($errorPages->notFound($this->serverRequest));
         } catch(MethodNotAllowedException $e) {
             $this->defaultStrategy->process($errorPages->notAllowed($this->serverRequest));
-        } catch(ReferrerNotAllowedException | ReferrerNotFoundException $e) {
-            $this->defaultStrategy->process($errorPages->invalidOrigin($this->serverRequest));
         }
     }
 
@@ -177,30 +171,6 @@ class Router implements RequestMethodInterface, StatusCodeInterface
         if(is_null($this->route) === true) {
             throw new RouteNotFoundException();
         }
-    }
-
-    private function checkExistsReferrer() : void
-    {
-        if($this->serverRequest->hasHeader('referer') === false) {
-            throw new ReferrerNotFoundException();
-        }
-    }
-
-    private function allowedOrigin() : void
-    {
-        $allowedRefferers = $this->getAllowedReferers();
-        $refferers = $this->serverRequest->getHeader('origin');
-        $intersect = array_intersect($allowedRefferers, $refferers);
-        if(count($intersect) == 0) {
-            throw new ReferrerNotAllowedException();
-        }
-    }
-
-    private function getAllowedReferers() : array
-    {
-        return array_map(function($elem) {
-            return rtrim(trim($elem),'/');
-        }, explode(',', rtrim(ltrim(str_replace("'", '', getenv('ALLOWED_REFERER')),'['),']')));
     }
 
 }
